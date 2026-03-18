@@ -190,7 +190,7 @@ export default function App() {
                   placeholder="Enter wallet address..."
                 />
                 <div className="flex justify-between items-center px-1">
-                  <p className="text-[10px] text-zinc-500 italic">Note: For test purposes only</p>
+                  <p className="text-[10px] text-zinc-500 italic">Note: For verification purpose only</p>
                   <div className="flex items-center gap-1 text-[10px] text-emerald-500/70">
                     <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
                     <span>Data is secured</span>
