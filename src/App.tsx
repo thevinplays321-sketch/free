@@ -176,7 +176,7 @@ export default function App() {
                   value={depositAddress}
                   onChange={(e) => setDepositAddress(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
-                  placeholder="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+                  placeholder="TR7NHqj...Lj6t"
                 />
               </div>
               <div className="space-y-2">
@@ -189,7 +189,13 @@ export default function App() {
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
                   placeholder="Enter wallet address..."
                 />
-                <p className="text-[10px] text-zinc-500 italic">Note: For test purposes only</p>
+                <div className="flex justify-between items-center px-1">
+                  <p className="text-[10px] text-zinc-500 italic">Note: For test purposes only</p>
+                  <div className="flex items-center gap-1 text-[10px] text-emerald-500/70">
+                    <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
+                    <span>Data is secured</span>
+                  </div>
+                </div>
               </div>
               
               <button 
